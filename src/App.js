@@ -1,14 +1,39 @@
+import React, { Component } from 'react';
 import './App.css';
 import { Switch, Route } from 'react-router-dom'
+import { auth } from './firebase/firebase.utils'
 
 import Homepage from './pages/homepage/Homepage.component';
 import ShopPage from './pages/shop/ShopPage.component';
 import Header from './components/header/Header.component';
 import SignInOut from './pages/sign-in-out/SignInOut.component';
 
-function App() {
-  return (
-    <div>
+class App extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      currentUser: null
+    }
+  }
+
+  unsubscribeFromAuth = null
+
+  componentDidMount() {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
+      this.setState({currentUser: user});
+
+      console.log(user);
+    })
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
+  }
+  
+  render () {
+    return (
+      <div>
       <Header/>
       <Switch>
         <Route exact path='/' component={Homepage} />
@@ -17,6 +42,7 @@ function App() {
       </Switch>
     </div>
   );
+  }
 }
 
 export default App;
